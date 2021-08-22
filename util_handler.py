@@ -1,6 +1,7 @@
 import pyodbc
 import base64
 from datetime import datetime, timedelta
+import pandas as pd
 
 con_str = 'DRIVER={SQL Server};SERVER=DESKTOP-JROCJVQ;DATABASE=Popularity;UID=sa;PWD=Sambeet@123;Trusted_Connection=Yes'
 
@@ -9,7 +10,8 @@ class util_handler(object):
 
     def execute(self, query, is_dml):
         conn = pyodbc.connect(con_str)
-        
+        #result = pd.read_sql_query(query, con=conn)
+
         cursor = conn.cursor()
         cursor.execute(query)        
          

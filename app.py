@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from query_handler import query_handler
 from util_handler import util_handler
 from sentiment_analysis import sentiment_analysis
+from multiprocessing import Process
 
 app = Flask(__name__)
 
@@ -54,7 +55,10 @@ def TrainSentiments():
                 return("Access Token is Invalid. Please pass {Token: '<Valid Token>'} ")
             else:
                 sa = sentiment_analysis()
-                sa.process_review_train()                        
+                training_task = Process(target=sa.process_review_train)
+                training_task.start()
+
+                obj["result"] = "Process for traing sentiments has started."                        
         else:
             return("Access Token is missing is the header. Please pass Token: '<Valid Token>' ")
 

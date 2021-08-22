@@ -28,7 +28,7 @@ class sentiment_analysis():
         return pd.DataFrame(result)
 
     def insert_model_stats(self, accuracy):
-        query = self.obj_query.insert_model_stat("CLASS_RF","RandomForest","Classification",accuracy)
+        query = self.obj_query.insert_model_stat("CLASS_LG","LogisticRegression","Classification",accuracy)
         self.obj_util.execute(query,True)
 
     def process_review_train(self):
