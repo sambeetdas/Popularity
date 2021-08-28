@@ -100,6 +100,36 @@ def PredictSentiment():
     return jsonify(obj)
 
 
+@app.route('/marksentiments', methods=[ 'POST' ])
+def MarkSentiments():
+    obj = {}
+    try:
+        token = request.headers.get('Token','')
+        if (token != ''):
+            obj_util = util_handler()
+            obj_query = query_handler()
+
+            cred = obj_util.ExtractAuthToken(token)
+            if (obj_util.DateValidation(cred[3]) == False):
+                return("Token Expired ")
+            query = obj_query.auth(cred[0],cred[1])
+            rows = obj_util.execute(query,False)
+            result = obj_util.convert_data_to_json(rows)
+            if (int(result[0]['COUNT']) == 0):
+                return("Access Token is Invalid. Please pass {Token: '<Valid Token>'} ")
+            else:
+                sa = sentiment_analysis()
+                training_task = Process(target=sa.mark_sentiment)
+                training_task.start()
+
+                obj["result"] = "Process to mark sentiments has started."                        
+        else:
+            return("Access Token is missing is the header. Please pass Token: '<Valid Token>' ")
+
+    except Exception as e:
+        return(str(e))
+    
+    return jsonify(obj)
 
 if __name__ == '__main__':
     import os

@@ -54,3 +54,17 @@ class sentiment_analysis():
             return "Positive"
 
         return "Negative"   
+
+    def mark_sentiment(self):
+        model = self.obj_ml_util.load_model("classification.pkl")
+        vectorized = self.obj_ml_util.load_model("vectorized.pkl")
+        query = self.obj_query.get_all_unmarked_reviews()
+        rows = self.obj_util.execute(query,False)
+        all_reviews = self.obj_util.convert_data_to_json(rows)
+        for item in all_reviews:
+            review = item["reviews_text"]
+            review_vectorized = self.obj_ml_util.transform(vectorized, [review])
+            result = model.predict(review_vectorized)
+            upd_query = self.obj_query.mark_sentiment(result[0], item["review_id"])
+            self.obj_util.execute(upd_query,True)
+        return "done"
